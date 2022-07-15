@@ -9,22 +9,29 @@
             <label for="palavra-chave-espaco">Palavra-chave</label>
             <input ng-model="data.space.keyword" class="search-field" type="text" name="palavra-chave-espaco" placeholder="Buscar <?php $this->dict('entities: spaces') ?>" />
         </form>
-        <!--.filter-->
-        <div class="filter search-filter--area">
-            <span class="label">Área de Atuação</span>
-            <div class="dropdown">
-                <div class="placeholder">Selecione as áreas</div>
-                <div class="submenu-dropdown">
-                    <ul class="filter-list">
-                        <li ng-repeat="area in areas" ng-class="{'selected':isSelected(data.space.areas, area.id)}" ng-click="toggleSelection(data.space.areas, area.id)">
-                            <span>{{area.name}}</span>
-                        </li>
-                    </ul>
+        <div ng-repeat-start="filter in advancedFilters['space']" ng-if="filter.isInline" class="filter">
+            <div ng-if="filter.fieldType === 'text'">
+                <span class="label">{{filter.label}}</span>
+                <input ng-model="data['space'].advancedFilters[filter.filter.param]" placeholder="{{filter.placeholder}}"/>
+            </div>
+            <div ng-if="filter.fieldType === 'checklist'">
+                <span class="label">{{filter.label}}</span>
+                <div class="dropdown">
+                    <div class="placeholder">{{filter.placeholder}}</div>
+                    <div class="submenu-dropdown">
+                        <ul class="filter-list">
+                            <li style="white-space: nowrap" ng-repeat="option in filter.options" ng-class="{'selected':isSelected(data['space'].advancedFilters[filter.filter.param], option.value)}"
+                            ng-click="toggleSelection(data['space'].advancedFilters[filter.filter.param], option.value)">
+                                <span>{{option.label}}</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
+        <span ng-repeat-end></span>
         <!--.filter-->
-        <div class="filter search-filter--tipo">
+        <!-- <div class="filter search-filter--tipo">
             <span class="label">Tipo</span>
             <div class="dropdown">
                 <div class="placeholder">Selecione os tipos</div>
@@ -36,106 +43,22 @@
                     </ul>
                 </div>
             </div>
-        </div>
+        </div> -->
+
         <!--.filter-->
         <div class="filter search-filter--acessibilidade">
             <span class="icon icon-check" ng-click="data.space.acessibilidade = !data.space.acessibilidade" ng-class="{'selected':data.space.acessibilidade}"></span>
             <span class="label show-label" ng-click="data.space.acessibilidade = !data.space.acessibilidade">Acessibilidade</span>
         </div>
         <!--.filter-->
-        <div class="filter show-advanced-filters">
-            <span class="icon icon-check"></span>
-            <span class="label show-label hltip" title="Exibir opções de filtro avançadas">Opções avançadas</span>
-        </div>
-        <!--.filter-->
+
         <div class="filter verified-filter search-filter--verified">
             <a class="hltip btn btn-verified" ng-class="{'selected':data.space.isVerified}" title="Exibir somente resultados Verificados" ng-click="toggleVerified('space')"><?php $this->dict('search: verified results') ?></a>
         </div>
         <!-- div.verified-filter -->
-    </div>
-    <div class="advanced-filters">
-        <div class="filter search-filter--adv1">
-            <span class="label">Filtro avançado 1</span>
-            <div class="dropdown">
-                <div class="placeholder">Filtro avançado 1</div>
-                <div class="submenu-dropdown">
-                    <ul class="filter-list">
-                        <li>Opção 1</li>
-                        <li>Opção 2</li>
-                        <li>Opção 3</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <!--.filter-->
-        <div class="filter search-filter--adv2">
-            <span class="label">Filtro avançado 2</span>
-            <div class="dropdown">
-                <div class="placeholder">Filtro avançado 2</div>
-                <div class="submenu-dropdown">
-                    <ul class="filter-list">
-                        <li>Opção 1</li>
-                        <li>Opção 2</li>
-                        <li>Opção 3</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <!--.filter-->
-        <div class="filter search-filter--adv3">
-            <span class="label">Filtro avançado 3</span>
-            <div class="dropdown">
-                <div class="placeholder">Filtro avançado 3</div>
-                <div class="submenu-dropdown">
-                    <ul class="filter-list">
-                        <li>Opção 1</li>
-                        <li>Opção 2</li>
-                        <li>Opção 3</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <!--.filter-->
-        <div class="filter search-filter--adv4">
-            <span class="label">Filtro avançado 4</span>
-            <div class="dropdown">
-                <div class="placeholder">Filtro avançado 4</div>
-                <div class="submenu-dropdown">
-                    <ul class="filter-list">
-                        <li>Opção 1</li>
-                        <li>Opção 2</li>
-                        <li>Opção 3</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <!--.filter-->
-       <div class="filter search-filter--adv5">
-            <span class="label">Filtro avançado 5</span>
-            <div class="dropdown">
-                <div class="placeholder">Filtro avançado 5</div>
-                <div class="submenu-dropdown">
-                    <ul class="filter-list">
-                        <li>Opção 1</li>
-                        <li>Opção 2</li>
-                        <li>Opção 3</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <!--.filter-->
-        <div class="filter search-filter--adv6">
-            <span class="label">Filtro avançado 6</span>
-            <div class="dropdown">
-                <div class="placeholder">Filtro avançado 6</div>
-                <div class="submenu-dropdown">
-                    <ul class="filter-list">
-                        <li>Opção 1</li>
-                        <li>Opção 2</li>
-                        <li>Opção 3</li>
-                    </ul>
-                </div>
-            </div>
+
+        <div ng-repeat="entity in ['space']" class="show-advanced-filters ">
+            <?php $this->part('search/advanced-filters') ?>
         </div>
         <!--.filter-->
     </div>

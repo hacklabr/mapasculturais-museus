@@ -58,66 +58,34 @@
     z-index:10000;
 }
 
-#nav-developers {
-    background: $brand-developer;
+p.endereco {
+    display: none;
 }
 
-#home-spaces .abas li.active {
-    border-bottom-color: $brand-primary;
-}
-
-<<<<<<< HEAD
-=======
-//
-// componentes/_icons.scss
-// --------------------------------------------------
-.icon-show-advanced-filters {
-    &:before {
-        content: $unicode-show-advanced-search;
+ul.abas{
+    @media print{
+        display: none;
     }
 }
 
-//
-// application/_advanced-search.scss
-// --------------------------------------------------
+.tabs-content .aba-content{
+    @media print{
+        display: block !important;
+    }
+}
 
-.entity-filter {
-    position: relative;
-    clear: both;
-    min-height: 2px;
-    padding: 0;
-    color: $brand-accent;
-    font-size: $font-size-small;
-    @media screen and (min-width: $screen-desktop) {
-        padding: $padding-base 0;
-        .simple-filters {
-            display: block !important;
-            height: 34px;
-        }
+.sobre-logo-prefeitura {
+    @media screen and (min-width: $screen-xs) {
+        max-height: 50px;
+        margin-top: 15px;
     }
-    .simple-filters {
-        overflow: hidden;
-        padding-bottom: $padding-base;
+    @media screen and (min-width: $screen-sm) {
+        max-height: 50px;
+        margin-top: 20px;
     }
-    .advanced-filters {
-        border-top: 1px solid $brand-accent;
-        padding-top: $padding-base;
-        > .filter {
-            &:first-child {
-                border-left: 0;
-            }
-        }
+     @media screen and (min-width: $screen-md) {
+        max-height: 42px;
     }
+
+
 }
-.filter {
-    @media screen and (min-width: $screen-desktop) {
-        width: 16.6%;
-    }
-}
-//** Verified button filter set.
-.verified-filter {
-    @media screen and (min-width: $screen-desktop) {
-        float: left;
-    }
-}
->>>>>>> layout dos filtros avançados

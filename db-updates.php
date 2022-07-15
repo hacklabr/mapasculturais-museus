@@ -6,7 +6,7 @@ $conn = $em->getConnection();
 
 return [
     'importa base de museus' => function() use ( $app, $conn ) {
-   /*    
+   /*
     [0] => Número na Processada
     [1] => Nome do Museu
     [2] => Natureza Administrativa
@@ -129,8 +129,8 @@ return [
     [119] => 6.6 - O museu possui política de aquisição de acervo?
     [120] => 6.7 - O museu possui política de descarte de acervo?
 */
-    
-    
+
+
         $data = file_get_contents(__DIR__ . '/museus.csv');
 
         $data = str_replace('erro no sistema', '', $data);
@@ -138,7 +138,7 @@ return [
         $data = explode("\n", $data);
 
         $labels = explode("\t", $data[0]);
-        
+
         $museus = [];
 
         foreach ($data as $i => $line) {
@@ -149,7 +149,7 @@ return [
 
             if (count($d) < 119)
                 continue;
-            
+
             foreach($d as $i => $val){
                 $d[$i] = trim($val);
                 if(trim($val) == '-'){
@@ -160,9 +160,9 @@ return [
             $obj = new stdClass;
 
             $obj->__metadata = new stdClass;
-            
+
             $obj->__metadata->mus_verificado = '1';
-            
+
             $obj->__links = [];
             $obj->__terms = ['mus_area' => []];
 
@@ -194,7 +194,7 @@ return [
                     $obj->__metadata->esfera_tipo = 'Outra';
                     $obj->type = 61;
                     break;
-                
+
                 default:
                     $obj->type = 61;
                     break;
@@ -227,7 +227,7 @@ return [
             if($d[11] && $d[12]){
                 $obj->location = "({$d[11]},{$d[12]})";
                 $obj->_geo_location = "ST_GeographyFromText('POINT({$d[11]} {$d[12]})')";
-                
+
             } else {
                 $obj->location = "(0,0)";
                 $obj->_geo_location = "ST_GeographyFromText('POINT(0 0)')";
@@ -242,17 +242,17 @@ return [
             $obj->__metadata->mus_EnCorrespondencia_CEP = $d[18];
             $obj->__metadata->mus_EnCorrespondencia_Municipio = $d[19];
             $obj->__metadata->mus_EnCorrespondencia_Estado = $d[20];
-            
+
             if ($d[15]) {
                 $obj->__metadata->mus_endereco_correspondencia = "{$d[13]} {$d[14]}, {$d[15]}, {$d[17]}, {$d[18]}, {$d[19]}, {$d[20]}";
             } else {
                 $obj->__metadata->mus_endereco_correspondencia = "{$d[13]} {$d[14]}, {$d[17]}, {$d[18]}, {$d[19]}, {$d[20]}";
             }
-            
+
             if($d[16]){
                 $obj->__metadata->mus_endereco_correspondencia .= ' - Caixa Postal: ' . $d[16];
             }
-            
+
 
 
             if ($obj->__metadata->mus_EnCorrespondencia_Nome_Logradouro == $obj->__metadata->En_Nome_Logradouro && $obj->__metadata->mus_EnCorrespondencia_Num == $obj->__metadata->En_Num) {
@@ -269,7 +269,7 @@ return [
                 if(!$url){
                     continue;
                 }
-                
+
                 if (!preg_match('#^https?://#', $url)) {
                     $url = 'http://' . $url;
                 }
@@ -311,9 +311,9 @@ return [
               [42] => Sábado
               [43] => Domingo
              */
-            
+
             /* vou colocar como um metadado e depois resolvemos */
-            
+
             $obj->__metadata->mus_segunda   = $d[37];
             $obj->__metadata->mus_terca     = $d[38];
             $obj->__metadata->mus_quarta    = $d[39];
@@ -328,11 +328,11 @@ return [
             } else if ($d[44] == 'N') {
                 $obj->__metadata->mus_ingresso_cobrado = 'não';
             }
-            
-            
+
+
             // [45] => Valor
             $obj->__metadata->mus_ingresso_valor = $d[45];
-            
+
             $instalacoes = [
                 46 => "Bebedouro",
                 47 => "Estacionamento",
@@ -473,7 +473,7 @@ return [
             }
 
             // [86] => 2.2.1 -  A instituição possui acervo:
-            
+
             $obj->__metadata->mus_acervo_comercializacao = $d[86];
             /* mudei de idéia
             switch ($d[86]) {
@@ -514,7 +514,7 @@ return [
 //                $obj->__metadata->mus_acervo_propriedade = $d[90];
 //            }
 
-            
+
               switch ($d[90]) {
                 case 'Possui SOMENTE acervo próprio':
                     $obj->__metadata->mus_acervo_propriedade = 'próprio';
@@ -570,14 +570,14 @@ return [
             } else if ($d[96] == 'Não') {
                 $obj->__metadata->mus_acervo_material = 'não';
             }
-            
+
             // [97] => 2.10.1 - Esse acervo encontra-se em exposição presencial?
             if ($d[97] == 'Sim') {
                 $obj->__metadata->mus_acervo_material_emExposicao = 'sim';
             } else if ($d[97] == 'Não') {
                 $obj->__metadata->mus_acervo_material_emExposicao = 'não';
             }
-            
+
             $nucleo_edificado = [
                 98 => 'O museu NÃO possui acervo em exposições em núcleo edificado',
                 99 => 'A exposição do museu está no próprio território',
@@ -586,7 +586,7 @@ return [
                 102 => 'O Museu NÃO possui núcleo edificado e NÃO possui sede técnico-administrativa',
                 103 => 'O acervo do museu é composto de núcleos edificados'
             ];
-            
+
             $nedi = [];
             foreach ($acessibilidade_visual as $i => $val) {
                 if ($d[$i] == 'Sim') {
@@ -594,30 +594,30 @@ return [
                 }
             }
             $obj->__metadata->mus_acervo_nucleoEdificado = implode(';', $nedi);
-            
+
             // [104] => 2.12 -  Identifique o tipo/categoria de manejo da Unidade de Conservação:
             if (strlen($d[104]) > 3) {
                 $obj->__metadata->mus_tipo_unidadeConservacao = $d[104];
             }
-            
+
             // Tipo de unidade de proteção integral
             if (strlen($d[105]) > 3) {
                 $obj->__metadata->mus_tipo_unidadeConservacao_protecaoIntegral = $d[105];
             }
-            
+
             // Tipo de unidade de uso sustentável
             if (strlen($d[106]) > 3) {
                 $obj->__metadata->mus_tipo_unidadeConservacao_usoSustentavel = $d[106];
             }
-            
+
             // [107] => 3.3 - O museu é aberto ao púbico em geral ou somente para públicos específicos?
             if (strlen($d[107]) > 3) {
                 $obj->__metadata->mus_abertura_publico = $d[107];
             }
-            
+
             if ($d[108] == 'Sim') {
                 $obj->__metadata->mus_instumentoCriacao_tipo = $d[109];
-                
+
                 /*
                  * Lei
                  * Decreto-Lei
@@ -627,53 +627,53 @@ return [
                  * Ata de Reunião
                  * Outro
                  */
-                
+
                 switch ($d[109]){
                     case 'Lei':
                         $obj->__metadata->mus_instumentoCriacao_tipo = $d[110];
                         break;
-                    
+
                     case 'Decreto-Lei':
                         $obj->__metadata->mus_instumentoCriacao_tipo = $d[111];
                         break;
-                    
+
                     case 'Decreto':
                         $obj->__metadata->mus_instumentoCriacao_tipo = $d[112];
                         break;
-                    
+
                     case 'Portaria':
                         $obj->__metadata->mus_instumentoCriacao_tipo = $d[113];
                         break;
-                    
+
                     case 'Resolução':
                         $obj->__metadata->mus_instumentoCriacao_tipo = $d[114];
                         break;
-                    
+
                     case 'Ata de Reunião':
                         $obj->__metadata->mus_instumentoCriacao_tipo = $d[115];
                         break;
-                    
+
                     case 'Outro':
                         $obj->__metadata->mus_instumentoCriacao_tipo = $d[116];
                         break;
-                    
+
                 }
             }
-            
+
             // [117] => 4.2 - O museu possui regimento interno?
             if ($d[117] == 'Sim') {
                 $obj->__metadata->mus_gestao_regimentoInterno = 'sim';
             } else if ($d[117] == 'Não') {
                 $obj->__metadata->mus_gestao_regimentoInterno = 'não';
             }
-            
+
             // [118] => 4.3 -  O museu possui plano museológico?
             if ($d[118] == 'Sim') {
                 $obj->__metadata->mus_gestao_planoMuseologico = 'sim';
             } else if ($d[118] == 'Não') {
                 $obj->__metadata->mus_gestao_planoMuseologico = 'não';
             }
-            
+
             // [119] => 6.6 - O museu possui política de aquisição de acervo?
             if ($d[119] == 'Sim') {
                 $obj->__metadata->mus_gestao_politicaAquisicao = 'sim';
@@ -687,11 +687,11 @@ return [
             } else if ($d[120] == 'Não') {
                 $obj->__metadata->mus_gestao_politicaDescarte = 'não';
             }
-            
+
             $museus[] = $obj;
         }
-        
-        
+
+
         // importa pro banco de dados
         foreach($museus as $i => $museu){
             $id = $conn->fetchColumn("SELECT nextval('space_id_seq'::regclass)");
@@ -720,7 +720,7 @@ return [
                         '$id', '$key', :val
                     )", ['val' => $val]);
             }
-            
+
             foreach($museu->__links as $link){
                 $conn->executeQuery("
                     INSERT INTO metalist (
@@ -754,7 +754,7 @@ return [
             $cods_ids[$o['value']] = $o['object_id'];
         }
 
-        
+
 
         foreach ($data as $i => $line) {
             if ($i === 0)
@@ -810,6 +810,329 @@ return [
             }
         }
 
+    },
+    'adiciona termo Museu aos museus' =>  function() use($app, $conn){
+
+        $data = file_get_contents(__DIR__ . '/museus.csv');
+        $data = explode("\n", str_replace('erro no sistema', '', $data));
+
+        $museus = [];
+        $vals = $conn->fetchAll("SELECT object_id, value FROM space_meta WHERE key = 'mus_cod'");
+        $cods_ids = [];
+
+        foreach($vals as $o)
+            $cods_ids[$o['value']] = $o['object_id'];
+
+        foreach ($data as $i => $line) {
+            if ($i === 0)
+                continue;
+            $d = explode("\t", $line);
+            if (count($d) < 119)
+                continue;
+            foreach($d as $i => $val){
+                $d[$i] = trim($val);
+                if(trim($val) == '-')
+                    $d[$i] = '';
+            }
+            $obj = new stdClass;
+            $obj->cod = $d[0];
+            $obj->id = $cods_ids[$obj->cod];
+
+            $museus[] = $obj;
+        }
+        $id_area_museu = $conn->fetchColumn("select id from term where term = 'Museu'");
+        if (!$id_area_museu){
+            echo "INSERINDO TERMO Área de Atuação: Museu\n\n";
+            $id_area_museu = $conn->fetchColumn("SELECT nextval('term_id_seq'::regclass)");
+            $conn->executeQuery('INSERT INTO term (id, taxonomy, term) VALUES (:id, 2, :term)',
+                            ['id' => $id_area_museu, 'term' => 'Museu']);
+        }
+        foreach($museus as $m){
+            $have_term = $conn->fetchColumn(
+                'select id from term_relation where term_id=:term_id and object_id=:object_id',
+                ['term_id'=>$id_area_museu, 'object_id'=>$m->id]
+            );
+            if(!$have_term){
+                echo "Inserindo termo 'Museu' ao museu de cod ($m->cod) - id ($m->id)\n";
+                $conn->executeQuery(
+                    "INSERT INTO term_relation (term_id, object_type, object_id) VALUES (:id, 'MapasCulturais\Entities\Space', :obj)",
+                    ['id' => $id_area_museu, 'obj' => $m->id]
+                );
+            }
+        }
+
+    },
+    'mascaras erradas para metadado add_info' =>  function() use($app, $conn){
+
+        $data = file_get_contents(__DIR__ . '/museus.csv');
+        $data = explode("\n", str_replace('erro no sistema', '', $data));
+
+        $museus = [];
+        $vals = $conn->fetchAll("SELECT object_id, value FROM space_meta WHERE key = 'mus_cod'");
+        $cods_ids = [];
+
+        foreach($vals as $o)
+            $cods_ids[$o['value']] = $o['object_id'];
+
+        foreach ($data as $i => $line) {
+            if ($i === 0)
+                continue;
+            $d = explode("\t", $line);
+            if (count($d) < 119)
+                continue;
+            foreach($d as $i => $val){
+                $d[$i] = trim($val);
+                if(trim($val) == '-')
+                    $d[$i] = '';
+            }
+            $id_museu = $cods_ids[$d[0]];
+            if (!$id_museu){
+                echo "Pulando museu de código $d[0]";
+                continue;
+            }
+            $original_email = explode(';', $d[22])[0];
+
+            if (filter_var($original_email, FILTER_VALIDATE_EMAIL)){
+                $db_email = $conn->fetchColumn(
+                    "select value from space_meta where key=:key and object_id=:object_id",
+                    ['key'=>'emailPublico', 'object_id' => $id_museu]
+                );
+                if (!$db_email){
+                    echo "Inserindo email $original_email ao museu de cod ($d[0]) - id ($id_museu)\n";
+                    $conn->executeQuery(
+                        "INSERT INTO space_meta (object_id, key, value) VALUES (:object_id, :key, :value)",
+                        ['object_id'=>$id_museu, 'key'=>'emailPublico', 'value'=>$original_email]
+                    );
+                } elseif (!filter_var($db_email, FILTER_VALIDATE_EMAIL)){
+                    echo "Atualizando email $original_email para o museu de cod ($d[0]) - id ($id_museu)\n";
+                    $conn->executeQuery(
+                        "UPDATE space_meta set value=:value where object_id=:object_id and key=:key",
+                        ['object_id'=>$id_museu, 'key'=>'emailPublico', 'value'=>$original_email]
+                    );
+                } else
+                    echo "Pulando e-mail valido $original_email\n";
+            }
+            else
+                echo "E-mail Inválido $original_email\n";
+
+            $update_phone = function($phone) use($conn, $id_museu, $d){
+                $phone_regex = '^\(+[0-9]{2,3}\) [0-9]{4}-[0-9]{4}$^';
+                if(preg_match($phone_regex, $phone)) {
+                    $db_phone = $conn->fetchColumn(
+                        "SELECT value from space_meta where key=:key and object_id=:object_id",
+                        ['key'=>'telefonePublico', 'object_id' => $id_museu]
+                    );
+                    if (!$db_phone){
+                        echo "Inserindo telefone $phone ao museu de cod ($d[0]) - id ($id_museu)\n";
+                        $conn->executeQuery(
+                            "INSERT INTO space_meta (object_id, key, value) VALUES (:object_id, :key, :value)",
+                            ['object_id'=>$id_museu, 'key'=>'telefonePublico', 'value'=>$phone]
+                        );
+                    } elseif (strlen($db_phone) !== 14 || !preg_match($phone_regex, $db_phone)){
+                        echo "Atualizando telefone $phone para o museu de cod ($d[0]) - id ($id_museu)\n";
+                        $conn->executeQuery(
+                            "UPDATE space_meta set value=:value where object_id=$id_museu and key=:key",
+                            ['key'=>'telefonePublico', 'value'=>$phone]
+                        );
+                    } else echo "Pulando telefone válido $db_phone";
+                } else echo "Pulando fone inválido $phone";
+
+
+            };
+
+            $tels = explode('/', $d[21]);
+            if(strlen($tels[0]) == 2)
+                $tels = explode('/', $d[22]);
+            $update_phone(substr(trim($tels[0]), 0, 14));
+
+            $add_info = $conn->fetchColumn(
+                "SELECT id from space_meta where key=:key and object_id=:object_id",
+                ['key'=>'mus_add_info', 'object_id' => $id_museu ]
+            );
+            if (!$add_info) {
+                echo "Inserindo informações adicionaos para o museu de cod ($d[0]) - id ($id_museu)\n";
+                $add_info = $d[21]."\n\n".$d[22];
+                $conn->executeQuery(
+                    "INSERT INTO space_meta (object_id, key, value) VALUES (:object_id, :key, :value)",
+                    ['object_id'=> $id_museu, 'key'=>'mus_add_info', 'value'=>$add_info]
+                );
+            }
+        }
+
+    },
+    'acerta tematicas importadas com a lista de tematicas' =>  function() use($app, $conn){
+        $space_metas = [
+             ['Artes, arquitetura e linguística', 'Artes, Arquitetura e Linguística'],
+             ['Antropologia e arqueologia', 'Antropologia e arqueologia'],
+             ['Ciências exatas, da terra, biológicas e da saúde', 'Ciências Exatas, da Terra, Biológicas e da Saúde'],
+             // ['História', 'História'],
+             ['Educação, esporte e lazer', 'Educação, Esporte e Lazer'],
+             ['Meios de comunicação e transporte', 'Meios de Comunicação e de Transporte'],
+             ['Produção de bens e serviços', 'Produção de Bens e Serviços'],
+             ['Defesa e segurança pública', 'Defesa e Segurança Pública'],
+
+             // ['Tradicional/Clássico', 'Tradicional/Clássico'],
+             ['Unidade de conservação da natureza', 'Unidade de Conservação da Natureza (Parque, Reserva, Floresta, etc.)'],
+             // ['Virtual', 'Virtual'],
+             ['Museu de território/Ecomuseu', 'Museu de Território/Ecomuseu'],
+             ['Jardim zoológico, botânico, herbário, oceanário ou planetário', 'Jardim Zoológico, Jardim Botânico, Herbário ou Planetário']
+
+        ];
+        foreach ($space_metas as $val) {
+            echo "Alterando termos importados como \"$val[1]\" para \"$val[0]\"\n";
+            $conn->executeQuery(
+                "UPDATE space_meta set value = :new_value where value = :old_value",
+                ['new_value' => $val[0], 'old_value' => $val[1]]
+            );
+        }
+    },
+    'importa museus para o agente ibraam' => function() use($app, $conn){
+        $space_ids = file_get_contents(__DIR__ . '/museus-ibram.csv');
+        $space_ids = explode("\n", $space_ids);
+        $space_ids = implode(",", $space_ids);
+        $conn->executeQuery(
+            "UPDATE space set agent_id = :agent_id where id in (".$space_ids.")",
+            [
+                'agent_id'  => $app->config['museus.ownerAgentId']
+                // , 'space_ids' => $space_ids
+            ],
+            [\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY]
+            // array(\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT)
+        );
+    },
+    'adiciona selos padrao' => function() use($app, $conn) {
+        $agent = $app->config['museus.ownerAgentId'];
+        $seal_id = $conn->fetchColumn("select max(id) from seal;");
+        $seal_id++;
+        $conn->executeQuery(
+            "INSERT INTO seal (
+                id,
+                agent_id,
+                name,
+                valid_period,
+                create_timestamp,
+                status
+            ) VALUES(
+                $seal_id,
+                $agent,
+                'RENIM - Rede Nacional de Identificação de Museus',
+                0,
+                CURRENT_TIMESTAMP,
+                1
+            );"
+        );
+        $seal_id++;
+        $conn->executeQuery(
+            "INSERT INTO seal (
+                id,
+                agent_id,
+                name,
+                valid_period,
+                create_timestamp,
+                status
+            ) VALUES(
+                $seal_id,
+                $agent,
+                'SBM - Sistema Brasileiro de Museus',
+                0,
+                CURRENT_TIMESTAMP,
+                1
+            );"
+        );
+    },
+    'remove selo padrao adicionado' => function() use($conn){
+        $conn->executeQuery("
+            DELETE FROM seal_relation
+            WHERE   object_type = 'MapasCulturais\Entities\Space'
+                AND object_id in (
+                    SELECT  id
+                    FROM    space
+                    WHERE   is_verified = 't'
+                        AND type >= 60
+                        AND type <= 69
+                )"
+        );
+    },
+    'adiciona selo renim para museus verificados' => function() use($app, $conn){
+        $agent = $app->config['museus.ownerAgentId'];
+        $seal_id = $conn->fetchColumn("
+            SELECT  id
+            FROM    seal
+            WHERE   name = 'RENIM - Rede Nacional de Identificação de Museus';"
+        );
+        $conn->executeQuery("
+            INSERT INTO seal_relation
+                SELECT  nextval('seal_relation_id_seq'),
+                        $seal_id,
+                        id,
+                        CURRENT_TIMESTAMP,
+                        1,
+                        'MapasCulturais\Entities\Space',
+                        $agent
+                FROM    space
+                WHERE   is_verified = 't'
+                    AND type >= 60
+                    AND type <= 69;"
+        );
+    },
+    'mus: adiciona selo fva 2014' => function() use($app, $conn){
+        $agent = $app->config['museus.ownerAgentId'];
+        //FVA 2014 http://museus.cultura.gov.br/selo/4/
+        $seal_id = 4;
+        $mus_cods = explode("\n", file_get_contents(__DIR__ . '/apply-seals/seal_fva2014.csv'));
+        $conn->executeQuery("
+            INSERT INTO seal_relation
+                SELECT  nextval('seal_relation_id_seq'),
+                        $seal_id,
+                        s.id,
+                        CURRENT_TIMESTAMP,
+                        1,
+                        'MapasCulturais\Entities\Space',
+                        $agent
+                FROM
+                    space s JOIN space_meta cod
+                        ON cod.key = 'mus_cod'
+                        AND cod.value IN ('" . implode("','", $mus_cods) . "')
+                        AND s.id = cod.object_id;
+                "
+        );
+    },
+    'mus: adiciona selo fva 2015' => function() use($app, $conn){
+        $agent = $app->config['museus.ownerAgentId'];
+        //FVA 2015 http://museus.cultura.gov.br/selo/5/
+        $seal_id = 5;
+        $mus_cods = explode("\n", file_get_contents(__DIR__ . '/apply-seals/seal_fva2015.csv'));
+        $conn->executeQuery("
+            INSERT INTO seal_relation
+                SELECT  nextval('seal_relation_id_seq'),
+                        $seal_id,
+                        s.id,
+                        CURRENT_TIMESTAMP,
+                        1,
+                        'MapasCulturais\Entities\Space',
+                        $agent
+                FROM
+                    space s JOIN space_meta cod
+                        ON cod.key = 'mus_cod'
+                        AND cod.value IN ('" . implode("','", $mus_cods) . "')
+                        AND s.id = cod.object_id;
+                "
+        );
+    },
+    'mus: remove notificacoes do Ibram' => function() use($app, $conn) {
+        $agent_id = $app->config['museus.ownerAgentId'];
+        $conn->executeQuery("
+            DELETE FROM notification WHERE id IN (
+                SELECT
+                    n.id
+                FROM
+                    notification n
+                        LEFT JOIN request r ON
+                            r.id = n.request_id
+                WHERE
+                    r.id is NULL
+                    AND n.user_id = (SELECT id FROM usr WHERE profile_id = $agent_id)
+            )
+        ");
     }
 ];
-        

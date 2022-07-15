@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 if(!$app->isEnabled('spaces')){
     return;
@@ -10,8 +10,7 @@ $num_verified_spaces    = $this->getNumEntities($class_space, true);
 $space_areas = array_values($app->getRegisteredTaxonomy($class_space, 'mus_area')->restrictedTerms);
 sort($space_areas);
 
-//$space_types = $app->getRegisteredEntityTypes($class_space);
-$space_types = $this->mus_getSpaceTypes();
+$space_types = $app->getRegisteredEntityTypes($class_space);
 
 $space_img_attributes = 'class="random-feature no-image"';
 
@@ -29,10 +28,6 @@ $url_search_spaces = $this->searchSpacesUrl;
             <div class="statistics">
                 <div class="statistic"><?php echo $num_spaces ?></div>
                 <div class="statistic-label"><?php $this->dict('entities: registered spaces') ?></div>
-            </div>
-            <div class="statistics">
-                <div class="statistic"><?php echo $num_verified_spaces; ?></div>
-                <div class="statistic-label"><?php $this->dict('entities: spaces') ?> da <?php $this->dict('home: abbreviation'); ?></div>
             </div>
         </div>
         <p><?php $this->dict('home: spaces'); ?></p>
